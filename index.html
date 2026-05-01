@@ -1109,6 +1109,7 @@
       pointer-events: none;
       top: 24px;
       z-index: 2;
+      white-space: nowrap;
     }
 
     #coin {
@@ -2376,6 +2377,8 @@
               coin.classList.add('hidden');
               overlay.classList.remove('hidden');
               cancelAnimationFrame(rafId);
+              throwBtn.textContent = '🔄 Привітати ще раз';
+              throwBtn.disabled = false;
               return;
             }
           }
@@ -2385,7 +2388,8 @@
       }
 
       throwBtn.addEventListener('click', () => {
-        if (coinActive || won) return;
+        if (won) { restartGame(); return; }
+        if (coinActive) return;
         const flower = FLOWERS[flowerIdx % FLOWERS.length];
         coin.textContent = flower;
         flowerIdx++;
@@ -2400,6 +2404,19 @@
         coinActive = true;
         throwBtn.disabled = true;
       });
+
+      function restartGame() {
+        cancelAnimationFrame(rafId);
+        won = false;
+        coinActive = false;
+        flowerIdx = 0;
+        coin.classList.add('hidden');
+        overlay.classList.add('hidden');
+        throwBtn.textContent = FLOWERS[0] + ' Кинути';
+        throwBtn.disabled = false;
+        initCouple();
+        rafId = requestAnimationFrame(loop);
+      }
 
       window.addEventListener('load', () => {
         initCouple();
